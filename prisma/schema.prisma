@@ -13,8 +13,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id          Int     @id @default(autoincrement())
-  name        String  @db.VarChar(100)
-  description String  @db.Text
+model User {
+  id          Int      @id @default(autoincrement())
+  firstName   String   @db.VarChar(100)
+  lastName    String   @db.VarChar(100)
+  province    String   @db.VarChar(150)
+  barangay    String   @db.VarChar(150)
+  city        String   @db.VarChar(150)
+  street      String?  @db.VarChar(150)
+  birthDate   DateTime
+  attachments Json
+  type        UserType @default(JOBSEEKER)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  Credentials Credentials?
+}
+
+model Credentials {
+  id       Int    @id @default(autoincrement())
+  userId   Int    @unique
+  user     User   @relation(fields: [userId], references: [id])
+  username String @db.VarChar(100)
+  password String @db.VarChar(250)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@unique([userId, username])
+}
+
+enum UserType {
+  JOBSEEKER
+  CLIENT
 }
